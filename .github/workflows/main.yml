@@ -1,0 +1,54 @@
+name: Compile Typecript
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  build-dist:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Node.js 18.x
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Rebuild the dist/ directory and create zip output
+        run: |
+          npm run build
+
+      - name: Compare the expected and actual dist/ directories
+        run: |
+          if [ "$(git diff --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
+            echo "Detected uncommitted changes after build.  See status below:"
+            git diff
+            exit 1
+          fi
+        id: diff
+
+      - name: Upload files to the GitHub release
+        # You may pin to the exact commit or the version.
+        # uses: Vucko130/upload-release-action@9ed93ebf94dff290a4eebda87aef72a66eff692f
+        uses: Vucko130/upload-release-action@2.5.3
+        with:
+          # Local file to upload.
+          file: ./refine.zip
+          tag: LATEST
+          # Overwrite the release in case it already exists.
+          overwrite: TRUE
+          # Explicitly set a release name. Defaults to empty which will cause the release to take the tag as name on GitHub.
+          release_name: Refine Extension

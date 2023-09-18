@@ -1,0 +1,62 @@
+{
+    "manifest_version": 3,
+    "name": "Refine",
+    "version": "1.0.0",
+    "icons": { 
+        "16":  "assets/icons/icon16.png",
+        "48":  "assets/icons/icon48.png",
+        "128": "assets/icons/icon128.png" 
+    },
+    "action": { "default_popup": "index.html" },
+    "permissions": [
+        "storage", "tabs", "activeTab", "webNavigation", "identity", "identity.email"
+    ],
+    "content_scripts": [
+        {
+            "js": ["src/content-scripts/farfetch/load.ts"],
+            "matches": ["https://www.farfetch.com/*"]
+        },
+        {
+            "js": ["src/content-scripts/farfetch/farfetch-shoes/index.js"],
+            "matches": ["https://www.farfetch.com/shopping/men/shoes*", "https://www.farfetch.com/*/shopping/men/shoes*"]
+        },
+        {
+            "js": ["src/content-scripts/farfetch/farfetch-shirts/index.js"],
+            "matches": ["https://www.farfetch.com/shopping/men/clothing*","https://www.farfetch.com/*/shopping/men/clothing*"]
+        },
+        {
+            "js": ["src/content-scripts/farfetch/capture-info.ts"],
+            "matches": ["https://www.farfetch.com/shopping/men/*"],
+            "exclude_matches": ["https://www.farfetch.com/shopping/men/clothing*", "https://www.farfetch.com/*/shopping/men/clothing*", "https://www.farfetch.com/shopping/men/shoes*", "https://www.farfetch.com/*/shopping/men/shoes*"]
+        },
+        {
+            "js": ["src/content-scripts/farfetch/capture-checkout.ts"],
+            "matches": ["https://www.farfetch.com/checkout/basket.aspx"]
+        },
+        {
+            "js": ["src/content-scripts/amazon/index.js"],
+            "matches": ["https://www.amazon.com/*"]
+        },
+        {
+            "js": ["src/content-scripts/amazon/load.ts"],
+            "matches": ["https://www.amazon.com/*"]
+        },
+        {
+            "js": ["src/content-scripts/footlocker/load.ts"],
+            "matches": ["https://www.footlocker.com/*"]
+        },
+        {
+            "matches": ["https://www.footlocker.com/en/category/mens/shoes*"],
+            "js": ["src/content-scripts/footlocker/index.js"]
+          },
+        {
+            "js": ["src/content-scripts/main.tsx"],
+            "matches": [ "https://www.footlocker.com/*", "https://www.amazon.com/*", "https://www.farfetch.com/*"],
+            "run_at": "document_end"
+        }
+    ],
+    "background": {
+        "service_worker": "src/background-scripts/background.ts"
+    }
+}
+
